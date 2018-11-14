@@ -9,21 +9,28 @@
 # *********************************************************
 
 
+if [ "$1" == "" ]; then
+    echo "parameter 1 missing: file folder location needed!"
+    exit
+fi
+
+
 echo """
 Extracting page number and file size of PDF...
 """
 
+file_list="$(ls $1/*.pdf)"
 f_count=0
 
-
-result_file_name="pdf_info_result.csv"
+result_file_name="$1/pdf_info_result.csv"
 if [ -f $result_file_name ]; then
     rm $result_file_name
 fi
 
 echo "file_name, rwx_au, size, page_num" > $result_file_name
 
-for file in $(ls *.pdf); do
+
+for file in $(ls $file_list); do
     let f_count=f_count+1
     if [ -r $file ]; then
        read_au="r"
