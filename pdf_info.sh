@@ -71,17 +71,23 @@ for file in $file_list; do
         rwx_au=$read_au$write_au$ex_au
         
         ## Get PDF info
+	if [[ "$OSTYPE" == "darwin"* ]]; then
+            pdf_page="$(mdls -name kMDItemNumberOfPages $file | awk -F'=' '{ print $2 }')"
+	elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            pdf_page="$(pdfinfo "$file" | grep Pages | awk '{print $2}')"
+	fi
         pdf_size="$(wc -c <"$file")"
 #        div=1024
 #        pdf_size=expr $pdf_size/$div
-        pdf_page="$(pdfinfo "$file" | grep Pages | awk '{print $2}')"
-    
+        
         final_result=""$file_name", ${rwx_au}, $pdf_size, $pdf_page"
         echo "${final_result}" >> $result_file_name
     fi
 done
+echo "Progress: ${f_count}/${file_num}"
 
-echo "    $f_count PDF file in this folder has been used."
+echo "    $f_count PDF file in this folder has been used: "
+echo "        a .csv file has been save to the original folder."
 
 echo """
 ... Done. 
