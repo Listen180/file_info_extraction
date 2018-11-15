@@ -41,13 +41,19 @@ fi
 
 echo "file_name, rwx_au, size, page_num" > $result_file_name
 
-
 for file in $file_list; do
+    FILE_TYPE="$(file -b $file | head -1 | cut -d , -f 1 | awk '{ print$1 }')"
+    if [ "$FILE_TYPE" == "PDF" ]; then
+        file_name="${file/$file_path/}"
+	echo "${file_name}"
+    else
+	continue
+    fi
+    
     if [ ! -f "$file" ]; then
 	echo "[!Warning] file not fount: "${file}""
     else
-        file_name="${file/$file_path/}"
-#	echo "${file_name}"
+#	file_name="${file/$file_path/}"
 #	perc=$(( ${f_count} / 4000 ))
 #	echo -ne "Progress: ${f_count}/${file_num} -- ${perc}% \r"
 	echo -ne "Progress: ${f_count}/${file_num} \r"
@@ -86,8 +92,8 @@ for file in $file_list; do
 done
 echo "Progress: ${f_count}/${file_num}"
 
-echo "    $f_count PDF file in this folder has been used: "
-echo "        a .csv file has been save to the original folder."
+echo "    $f_count PDF file in this folder has been successfully used: "
+echo "        (a csv file has been save to the original folder.)"
 
 echo """
 ... Done. 
