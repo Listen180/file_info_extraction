@@ -42,9 +42,11 @@ fi
 echo "file_name, rwx_au, size, page_num" > $result_file_name
 
 for file in $file_list; do
-#    FILE_TYPE="$(file -b $file | head -1 | cut -d , -f 1 | awk '{ print$1 }')"
-    FILE_TYPE="$(file -b $file | awk '{ print$1 }')"
-    if [ "$FILE_TYPE" == "PDF" ]; then
+    echo $file
+#    FILE_TYPE="$(file -b $file | head -1 | cut -d , -f 1 | awk '{ print $1 }')"
+    file_type="$(file -b $file | awk '{ print $1 }')"
+    echo $file_type
+    if [ "$file_type" == "PDF" ]; then
         file_name="${file/$file_path/}"
 	echo "${file_name}"
     else
