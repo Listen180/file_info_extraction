@@ -9,6 +9,7 @@
 # *********************************************************
 
 
+
 if [ "$1" == "" ]; then
     echo "parameter 1 missing: file folder location needed!"
     exit
