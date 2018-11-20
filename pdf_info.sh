@@ -23,7 +23,7 @@ Extracting page number and file size of PDF...
 file_path=$1/
 file_list=$1/*.pdf
 #echo $file_list
-
+cd $file_path
 
 #for f in $1/*.pdf; do
 #    echo "$f"
@@ -42,11 +42,20 @@ fi
 
 echo "file_name, rwx_au, size, page_num" > $result_file_name
 
+mkdir $1/sub_folder
+
 for file in $file_list; do
-    echo $file
+    file_sub="$(echo "$file" | grep ".*年年度报告\.pdf")" # add a file name rule
+#    echo $file_sub
+    if [ -z "$file_sub" ]; then
+	continue
+    else
+	cp "$file" "./sub_folder/"
+    fi
+#    echo $file
 #    FILE_TYPE="$(file -b $file | head -1 | cut -d , -f 1 | awk '{ print $1 }')"
     file_type="$(file -b $file | awk '{ print $1 }')"
-    echo $file_type
+#    echo $file_type
     if [ "$file_type" == "PDF" ]; then
         file_name="${file/$file_path/}"
 	echo "${file_name}"
