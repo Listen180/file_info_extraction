@@ -42,36 +42,36 @@ fi
 
 echo "file_name, rwx_au, size, page_num" > $result_file_name
 
+rm -r $1/sub_folder
 mkdir $1/sub_folder
 
 for file in $file_list; do
-    file_sub="$(echo "$file" | grep ".*年年度报告\.pdf")" # add a file name rule
-#    echo $file_sub
-    if [ -z "$file_sub" ]; then
-	continue
-    else
-	cp "$file" "./sub_folder/"
-    fi
-#    echo $file
-#    FILE_TYPE="$(file -b $file | head -1 | cut -d , -f 1 | awk '{ print $1 }')"
-    file_type="$(file -b $file | awk '{ print $1 }')"
-#    echo $file_type
-    if [ "$file_type" == "PDF" ]; then
-        file_name="${file/$file_path/}"
-	echo "${file_name}"
-    else
-	continue
-    fi
-    
-    if [ ! -f "$file" ]; then
-	echo "[!Warning] file not fount: "${file}""
-    else
-#	file_name="${file/$file_path/}"
-#	perc=$(( ${f_count} / 4000 ))
-#	echo -ne "Progress: ${f_count}/${file_num} -- ${perc}% \r"
-	echo -ne "Progress: ${f_count}/${file_num} \r"
-        let f_count=f_count+1
 
+    if [ ! -f "$file" ]; then
+        echo "[!Warning] file not fount: "${file}""
+    else
+        file_sub="$(echo "$file" | grep ".*年年度报告.*\.pdf")"
+        file_sub_sub="$(echo "$file_sub" | grep "已取消")"
+        if [ -z "$file_sub" ]; then
+            continue
+        elif [ ! -z "$file_sub_sub" ]; then
+            continue
+        else
+            cp "$file" "./sub_folder/"
+            echo "$file"
+            let f_count=f_count+1
+            echo -ne "Progress: ${f_count}/${file_num} \r"
+        fi
+        file_name="${file/$file_path/}"
+    ## File Type check
+#    file_type="$(file -b $file | awk '{ print $1 }')"
+#    echo $file_type
+#    if [ "$file_type" == "PDF" ]; then
+#        file_name="${file/$file_path/}"
+#        echo "${file_name}"
+#    else
+#        continue
+#    fi
         if [ -r "$file" ]; then
            read_au="r"
         else
@@ -90,11 +90,11 @@ for file in $file_list; do
         rwx_au=$read_au$write_au$ex_au
         
         ## Get PDF info
-	if [[ "$OSTYPE" == "darwin"* ]]; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
             pdf_page="$(mdls -name kMDItemNumberOfPages $file | awk -F'=' '{ print $2 }')"
-	elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
             pdf_page="$(pdfinfo "$file" | grep Pages | awk '{print $2}')"
-	fi
+    fi
         pdf_size="$(wc -c <"$file")"
 #        div=1024
 #        pdf_size=expr $pdf_size/$div
